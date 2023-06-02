@@ -1,47 +1,82 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <ExampleComponent v-model:params="params" />
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script setup lang="ts">
+import ExampleComponent from '@/components/ExampleComponent.vue'
+import { onBeforeMount, reactive, watch, readonly } from 'vue'
+
+const params = reactive<any>({
+  createForm: {
+    orderFreightProductDTOS: [
+      {
+        productId: "11",
+        containerCode: 22,
+        quantity: "33",
+        gwKgs: "44",
+        key: 1,
+      },
+      {
+        productId: "11",
+        containerCode: 22,
+        quantity: "33",
+        gwKgs: "44",
+        key: 2,
+      },
+    ],
+    validData: [],
+    orderFreightProductDTOsSumPrice: 0,
+  },
+  contactPersonList: [], //联系人下拉
+  contactEmailList: [], //联系人邮箱下拉
+  selectedGroupData: {}, //选中的租户信息
+  selectedPersonInCharge: {}, //选中的负责人信息
+  freightData: {}, //选中的运价信息
+  serviceProductTree: [], //选中的服务树形结构
+  IncotermsData: [], //Incoterms下拉枚举
+  TransportModeData: [], //物流服务方式下拉枚举
+});
+
+const init = () => {
+  new Promise((resolve, reject) => {
+    setTimeout(resolve, 3000);
+  }).then(() => {
+    params.freightData = {
+      aaa: 222,
+      bbb: 222,
+      validStartDate: '2023-06-03',
+      validEndDate: '2023-07-03',
+    }
+    params.serviceProductTree = {}
+    if (
+      params.freightData.validStartDate &&
+      params.freightData.validEndDate
+    ) {
+      //处理有效期回显
+      params.createForm.validData = [
+        params.freightData.validStartDate,
+        params.freightData.validEndDate,
+      ];
+    }
+    params.createForm = {
+      aaa: 222,
+    };
+    console.log('params', params);
+    console.log('params.createForm', params.createForm);
+  });
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+onBeforeMount(() => {
+  init()
+})
+// watch(
+//   () => params.createForm,
+//   (val) => {
+//     params.createForm = val
+//   },
+//   {
+//     deep: true,
+//     immediate: true
+//   }
+// )
+</script>
